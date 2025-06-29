@@ -1,0 +1,80 @@
+<svg width="900" height="600" xmlns="http://www.w3.org/2000/svg" style="background-color: #ffffff;">
+  <!-- CSS Styles -->
+  <style>
+    .box { fill: #f0f8ff; stroke: #4682b4; stroke-width: 2; rx: 10; }
+    .inner-box { fill: #e6e6fa; stroke: #9370db; stroke-width: 1; }
+    .title { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; }
+    .label { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 14px; text-anchor: middle; }
+    .step-label { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 13px; fill: #d9534f; font-weight: bold; }
+    .arrow { stroke: #333; stroke-width: 1.5; fill: none; }
+    .arrow-vpn { stroke: #28a745; stroke-dasharray: 5, 5; stroke-width: 2; fill: none; }
+    .arrow-wifi { stroke: #007bff; stroke-dasharray: 2, 2; stroke-width: 2; fill: none; }
+  </style>
+
+  <!-- Arrowhead Definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+    <marker id="arrowhead-vpn" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#28a745" />
+    </marker>
+    <marker id="arrowhead-wifi" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#007bff" />
+    </marker>
+  </defs>
+
+  <!-- Components -->
+  <!-- iPhone -->
+  <g id="iphone">
+    <rect x="50" y="50" width="250" height="250" class="box" />
+    <text x="175" y="80" class="title">iPhone</text>
+    <rect x="70" y="100" width="210" height="60" class="inner-box" />
+    <text x="175" y="135" class="label">Termius (SSH Client)</text>
+    <rect x="70" y="180" width="210" height="100" class="inner-box" />
+    <text x="175" y="205" class="label">Pythonista</text>
+    <text x="175" y="230" class="label">(Firmware Download &amp;</text>
+    <text x="175" y="250" class="label">HTTP Server)</text>
+  </g>
+
+  <!-- Development PC -->
+  <g id="pc">
+    <rect x="600" y="50" width="250" height="250" class="box" />
+    <text x="725" y="80" class="title">Development PC</text>
+    <rect x="620" y="100" width="210" height="60" class="inner-box" />
+    <text x="725" y="135" class="label">Gemini CLI &amp; PlatformIO</text>
+    <rect x="620" y="180" width="210" height="60" class="inner-box" />
+    <text x="725" y="215" class="label">VSCode Live Server</text>
+  </g>
+
+  <!-- M5Stack -->
+  <g id="m5stack">
+    <rect x="325" y="450" width="250" height="100" class="box" />
+    <text x="450" y="495" class="title">M5Stack</text>
+  </g>
+
+  <!-- Arrows and Labels -->
+  <!-- 1 & 2. SSH Control & Build -->
+  <path d="M300,135 C 450,100, 450,170, 600,135" class="arrow-vpn" marker-end="url(#arrowhead-vpn)"/>
+  <text x="340" y="103" class="step-label">1. SSH Control (Termius)</text>
+  <text x="340" y="118" class="step-label">2. Build Command (Gemini CLI)</text>
+
+  <!-- 3. Live Server serves file -->
+  <text x="670" y="255" class="step-label">3. `firmware.bin` 配信待機</text>
+
+  <!-- 4. Pythonista downloads firmware -->
+  <path d="M600,215 C 450,250, 450,180, 300,215" class="arrow-vpn" marker-end="url(#arrowhead-vpn)"/>
+  <text x="365" y="245" class="step-label">
+    <tspan>4. `firmware.bin` を</tspan>
+    <tspan x="365" dy="1.2em">ダウンロード (Tailscale経由)</tspan>
+  </text>
+
+  <!-- 5, 6, 7. iPhone to M5Stack Connection & OTA -->
+  <path d="M175,300 C 175,450, 250,500, 325,500" class="arrow-wifi" marker-end="url(#arrowhead-wifi)" />
+  <text x="312" y="360" class="step-label" text-anchor="middle">
+    <tspan>5. `firmware.bin` 配信開始</tspan>
+    <tspan x="312" dy="1.2em">6. テザリング接続</tspan>
+    <tspan x="312" dy="1.2em">7. OTAアップデート</tspan>
+  </text>
+
+</svg>
