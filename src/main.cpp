@@ -1,43 +1,44 @@
-#include <M5Unified.h>
+#include <M5Unified.h> 
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <Update.h>
 
-const char* ssid = "YOUR_SSID";  // テザリングのSSID
-const char* password = "YOUR_PASSWORD";  // パスワード
+const char* ssid = "YOUR SSID";  // テザリングのSSID
+const char* password = "YOUR PASS";  // パスワード
 
 const char* firmware_url = "http://172.20.10.1:8000/firmware.bin";  // PythonistaサーバのURL
 
+bool wifiConnected = false;
+
 void setup() {
-  auto cfg = M5.config();       // M5Stack初期設定用の構造体を代入
+  auto cfg = M5.config();
   M5.begin(cfg);
-  // Serial.begin(115200);
-  M5.Display.setTextSize(3);               // テキストサイズを変更
-  M5.Display.print("Hello M5 with gemini");       // 画面にHello M5 with geminiと1行表示
-  M5.Display.print("ok");
-  Serial.println("hello m5stack with gemini");         // シリアルモニターにhello m5stack with geminiと1行表示
+  M5.Display.setTextSize(2);
+  M5.Display.println("Booting...");
 
-  delay(1000);
-
-  Serial.println("Connecting to WiFi...");
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
   int retries = 0;
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED && retries < 20) {
     delay(500);
-    Serial.print(".");
-    if (++retries > 20) {
-      Serial.println("\nWiFi connection failed");
-      ESP.restart();
-    }
+    M5.Display.print(".");
+    retries++;
   }
 
-  Serial.println("\nConnected to WiFi");
-  Serial.println("IP Address: ");
-  Serial.println(WiFi.localIP());
+  if (WiFi.status() == WL_CONNECTED) {
+    wifiConnected = true;
+    M5.Display.println("\nWiFi Connected");
+    M5.Display.println(WiFi.localIP());
+    M5.Display.println("Press BtnA for OTA");
+  } else {
+    wifiConnected = false;
+    M5.Display.println("\nWiFi Failed");
+  }
+}
 
-  // HTTP OTA 開始
-  Serial.println("Starting OTA update...");
+void doOTA() {
+  M5.Display.println("Starting OTA...");
 
   HTTPClient http;
   http.begin(firmware_url);
@@ -48,31 +49,31 @@ void setup() {
     WiFiClient* stream = http.getStreamPtr();
 
     if (!Update.begin(contentLength)) {
-      Serial.println("Not enough space to begin OTA");
+      M5.Display.println("No space for OTA");
       return;
     }
 
     size_t written = Update.writeStream(*stream);
 
     if (written == contentLength) {
-      Serial.println("Written : " + String(written) + " successfully");
+      M5.Display.println("OTA written OK");
     } else {
-      Serial.println("Written only : " + String(written) + "/" + String(contentLength) + ". Retry?");
+      M5.Display.printf("OTA partial: %d/%d\n", written, contentLength);
     }
 
     if (Update.end()) {
-      Serial.println("OTA done!");
       if (Update.isFinished()) {
-        Serial.println("Update successfully completed. Rebooting.");
+        M5.Display.println("OTA Done. Reboot.");
+        delay(2000);
         ESP.restart();
       } else {
-        Serial.println("Update not finished? Something went wrong!");
+        M5.Display.println("OTA not finished");
       }
     } else {
-      Serial.println("Error Occurred. Error #: " + String(Update.getError()));
+      M5.Display.printf("OTA error: %d\n", Update.getError());
     }
   } else {
-    Serial.println("Cannot download firmware. HTTP code: " + String(httpCode));
+    M5.Display.printf("HTTP error: %d\n", httpCode);
   }
 
   http.end();
@@ -80,7 +81,19 @@ void setup() {
 
 void loop() {
   M5.update();
-  // M5.Display.print("hello m5");
-  delay(1000);
-  // Do nothing
+
+  // ボタンAを押したときにOTAを実行
+  if (wifiConnected && M5.BtnA.wasPressed()) {
+    doOTA();
+  }
+
+  if(M5.BtnB.wasPressed()){
+    M5.Display.println("hello, button B");
+  }
+
+  if(M5.BtnC.wasPressed()){
+    M5.Display.clear();
+  }
+
+  delay(100);
 }

@@ -34,13 +34,13 @@ iPhoneのターミナルアプリ（例: Termius）から開発PCに接続し、
 
 *   **ハードウェア**
     *   M5Stack (Core, Core2, StickCなどESP32ベースのもの)
-    *   開発用のPC (Windows, macOS, Linux)
+    *   開発用のPC (Windows, macOS, Linux)　※この例ではWindowsを使用
     *   iPhone
 *   **ソフトウェア**
     *   Visual Studio Code
     *   PlatformIO IDE 拡張機能
     *   Live Server (VSCode拡張機能)
-    *   Tailscale (PCとiPhoneにインストール)
+    *   Tailscale (PCとiPhoneにインストール)　※別のソフトでもできると思います
     *   Gemini Code Assist (CLI) (開発PCにインストール)
     *   Termius などのSSHクライアントアプリ (iPhone)
     *   Pythonista 3 (iPhoneアプリ)　※有料
@@ -58,7 +58,7 @@ const char* ssid = "***";  // ← ご自身のiPhoneの名前に変更
 const char* password = "***";  // ← インターネット共有のパスワードに変更
 ```
 
-また、SSHの設定やVSCodeのLive ServerやPlatform IOの拡張の導入などは別途実施します。
+また、SSHの設定やVSCodeのLive ServerやPlatform IOの拡張の導入やライブラリ(M5Unified)の導入などは別途実施します。
 
 ### 2. ファームウェアのビルド (PC)
 
@@ -69,6 +69,8 @@ const char* password = "***";  // ← インターネット共有のパスワー
     *   **(例)** `.pio/build/m5stack-core-esp32/firmware.bin`
 4.  (初回のみ) プロジェクトのルートディレクトリに`firmware`という名前のフォルダを作成します。
 5.  生成された`firmware.bin`を、作成した`firmware`フォルダにコピーまたは移動します。Live Serverはこのフォルダ内のファイルを配信します。
+
+※初回書き込み時のみ、platformio.iniの設定でUSB接続にする必要があります。
 
 ### 3. ファームウェアの配信準備 (PC & iPhone)
 
@@ -88,7 +90,7 @@ const char* password = "***";  // ← インターネット共有のパスワー
 2.  以下のコードを貼り付けて保存します。
 
     ```python
-    # pythonista_ota_server.py (提供されたコードを反映)
+    # pythonista_ota_server.py
     
     import requests
     import http.server
